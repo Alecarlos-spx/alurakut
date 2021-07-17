@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 import MainGrid from '../src/components/MainGrid';
 import Box from '../src/components/Box';
@@ -27,7 +28,15 @@ function ProfileSidebar(props) {
   </Box>
 )};
 
+
+
 export default function Home() {
+  const urlBase = 'https://api.github.com/users/';
+  const githubUser = 'alecarlos-spx';
+  const [ seguidores, setSeguidores ] = useState([]);
+
+  const [ listaFavoritos, setListaFavoritos ] = useState([]);
+
 
   const [ comunidades, setComunidades ] = useState([{
     id: '32q43214124231423242142',
@@ -41,75 +50,42 @@ export default function Home() {
     url: 'https://picsum.photos/200/300',
   }]);
 
+  useEffect(() => {
+    axios.get(`${urlBase}${githubUser}/followers`)
+      .then(response => {
+        let followers = [];
+        
+        response.data.map((item) => {
+          followers.push({
+              id: item.id,
+              title: item.login,
+              image: `https://github.com/${item.login}.png`,
+              url: `https://github.com/${item.login}`,
+            });
+          });
 
-  const pessoasFavoritas = [{
-    id: 1,
-    title: 'filipedeschamps',
-    image: 'https://github.com/filipedeschamps.png',
-    url: 'https://github.com/filipedeschamps'
-  },
-  {
-    id: 2,
-    title: 'omariosouto',
-    image: 'https://github.com/omariosouto.png',
-    url: 'https://github.com/omariosouto',
-  },
-  {
-    id: 3,
-    title: 'peas',
-    image: 'https://github.com/peas.png',
-    url: 'https://github.com/peas',
-  },
-  {
-    id: 4,
-    title: 'rafaballerini',
-    image: "https://github.com/rafaballerini.png",
-    url: 'https://github.com/rafaballerini',
-  },
-  {
-    id: 5,
-    title: 'marcobrunodev',
-    image: "https://github.com/marcobrunodev.png",
-    url: 'https://github.com/marcobrunodev',
-  },
-  {
-    id: 6,
-    title: 'felipefialho',
-    image: "https://github.com/felipefialho.png",
-    url: 'https://github.com/felipefialho',
-  }];
+          setSeguidores(...seguidores, followers);
+        }).catch(error => console.error(error));
+      }, []);
 
-  //const comunidades = ['alurakut'];
-  const githubUser = 'alecarlos-spx';
+  useEffect(() => {
+    axios.get(`${urlBase}${githubUser}/following`)
+      .then(response => {
+        let following = [];
+        
+        response.data.map((item) => {
+          following.push({
+              id: item.id,
+              title: item.login,
+              image: `https://github.com/${item.login}.png`,
+              url: `https://github.com/${item.login}`,
+            });
+          });
 
-  const urlBase = 'https://api.github.com/users/';
-  let listaFavoritos =  [];
+          setListaFavoritos(...listaFavoritos, following);
+        }).catch(error => console.error(error));
+      }, []);
 
-  //console.log(`${urlBase}${githubUser}/followers`);
-
-//  function followersGitHub(props)  {
-//   const { githubUser } = props;
-//   axios.get(`${urlBase}${githubUser}/followers`)
-//   .then(response => {
-//     const followers =  response.data;
-//       followers.map((item) => {
-//         this.listaFavoritos.push(item.login);
-//       } );
-//       console.log(followers);
-//       return followers;
-//     }).catch(error => console.error(error));
-
-// }
-  
-
-  
-
-    
-  //  let pessoasFavoritas = (followersGitHub({githubUser}));
-
-  // console.log(pessoasFavoritas);
-  // console.log(listaFavoritos);
-  
   return (
     <>
       <AlurakutMenu githubUser={githubUser} />
@@ -138,7 +114,6 @@ export default function Home() {
                 image : dadosDoForm.get('image'),
                 url: dadosDoForm.get('image'),
               }
-
 
               setComunidades([...comunidades, comunidade]);
               e.target.title.value = '';
@@ -170,9 +145,8 @@ export default function Home() {
         </div>
         <div className="profileRelationsArea" style={{gridArea: 'profileRelationsArea'}}>
         <ProfileRelationsBoxWrapper lista={comunidades} titulo='Comunidades'/>
-          <ProfileRelationsBoxWrapper lista={pessoasFavoritas} titulo='Pessoas da comunidades'/>
-     
-      
+          <ProfileRelationsBoxWrapper lista={listaFavoritos} titulo='Pessoas da comunidade'/>
+          <ProfileRelationsBoxWrapper lista={seguidores} titulo='Seguidores'/>
         </div>
       </MainGrid>
     </>
