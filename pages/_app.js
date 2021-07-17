@@ -11,7 +11,8 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    background-color: #D9E6F6;
+    background-color: #fff;
+    background-image: url("https://cdn.pixabay.com/photo/2017/05/10/12/41/hacker-2300772_960_720.jpg");
     font-family: sans-serif;
   }
 

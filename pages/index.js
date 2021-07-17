@@ -119,7 +119,7 @@ export default function Home() {
               e.target.title.value = '';
               e.target.image.value = '';
              
-              //comunidades.push()
+       
             } }>
               <div>
                 <input 
